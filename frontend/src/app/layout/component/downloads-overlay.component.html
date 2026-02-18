@@ -1,0 +1,62 @@
+<div class="w-[400px] max-h-[500px] overflow-y-auto bg-white rounded-lg shadow-lg border border-gray-200">
+  <div class="flex justify-between items-center p-3 border-b sticky top-0 bg-white z-10">
+    <h3 class="font-bold m-0 text-lg">下載排程</h3>
+    <div class="flex items-center gap-2">
+        <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-full" *ngIf="queueService.tasks().length > 0">
+            {{ queueService.totalProgress() }}%
+        </span>
+        <span class="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-full" *ngIf="queueService.activeCount() > 0">
+            {{ queueService.activeCount() }} 個任務進行中
+        </span>
+    </div>
+  </div>
+
+  <div class="flex flex-col">
+    <div *ngFor="let task of queueService.tasks()" class="p-3 border-b hover:bg-gray-50 transition-colors relative group">
+        <div class="flex gap-3 mb-2">
+            <!-- 縮圖 -->
+            <img [src]="task.thumbnail" class="w-20 h-14 object-cover rounded shadow-sm" alt="thumbnail">
+            
+            <div class="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+                <!-- 標題 -->
+                <div class="font-medium text-sm truncate text-gray-800" [title]="task.title">
+                    {{ task.title }}
+                </div>
+                
+                <!-- 狀態與速度 -->
+                <div class="flex justify-between items-center text-xs text-gray-500">
+                    <div class="flex items-center gap-2">
+                         <p-tag [value]="task.status === 'downloading' ? '下載中' : (task.status === 'completed' ? '完成' : '失敗')" 
+                                [severity]="task.status === 'completed' ? 'success' : (task.status === 'failed' ? 'danger' : 'info')" 
+                                styleClass="text-[10px] px-1 py-0.5 min-w-[50px] text-center"></p-tag>
+                         <span *ngIf="task.status === 'downloading'" class="font-mono text-blue-600">{{ task.speed }}</span>
+                    </div>
+                    <span *ngIf="task.status === 'downloading'" class="font-mono">{{ task.eta }}</span>
+                </div>
+            </div>
+            
+             <!-- 移除按鈕 -->
+            <button 
+                class="absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-all"
+                (click)="removeTask(task.id, $event)"
+                title="移除紀錄"
+            >
+                <i class="pi pi-times text-xs"></i>
+            </button>
+        </div>
+
+        <!-- 進度條 -->
+        <p-progressBar 
+            [value]="task.progress" 
+            [showValue]="false" 
+            [style]="{ height: '4px' }"
+            [color]="task.status === 'failed' ? 'var(--red-500)' : 'var(--primary-color)'"
+        ></p-progressBar>
+    </div>
+
+    <div *ngIf="queueService.tasks().length === 0" class="flex flex-col items-center justify-center py-12 text-gray-400 gap-3">
+        <i class="pi pi-inbox text-5xl opacity-20"></i>
+        <p class="text-sm font-medium">尚無下載任務</p>
+    </div>
+  </div>
+</div>

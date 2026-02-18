@@ -1,0 +1,98 @@
+<p-toast></p-toast>
+
+<div class="card">
+    <div class="flex flex-col items-center gap-4 mb-6">
+        <h2 class="text-2xl font-bold m-0">
+            <i class="pi pi-youtube mr-2" style="color: #ff0000"></i>
+            YouTube 影片搜尋
+        </h2>
+        <div class="flex gap-2 w-full" style="max-width: 600px">
+            <input type="text" pInputText [(ngModel)]="searchQuery" placeholder="輸入關鍵字搜尋影片..." class="w-full" (keydown)="onKeyDown($event)" />
+            <p-button icon="pi pi-search" label="搜尋" (onClick)="onSearch()" [loading]="loading()"></p-button>
+        </div>
+    </div>
+
+    <!-- 搜尋結果 -->
+    @if (loading()) {
+        <div class="flex justify-center p-8">
+            <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+        </div>
+    }
+
+    @if (videos().length > 0) {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            @for (video of videos(); track video.videoId) {
+                <div class="card p-0 overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer">
+                    <!-- 縮圖 -->
+                    <div class="relative">
+                        <img [src]="video.thumbnail" [alt]="video.title" class="w-full aspect-video object-cover" />
+                        <p-tag [value]="video.duration" severity="secondary" class="absolute bottom-2 right-2" [style]="{ background: 'rgba(0,0,0,0.8)', color: '#fff' }"></p-tag>
+                    </div>
+
+                    <!-- 資訊 -->
+                    <div class="p-3">
+                        <h4 class="text-sm font-semibold m-0 mb-2 line-clamp-2" [title]="video.title">
+                            {{ video.title }}
+                        </h4>
+                        <p class="text-xs text-gray-500 m-0 mb-1">
+                            <i class="pi pi-user mr-1"></i>
+                            {{ video.channel }}
+                        </p>
+                        <div class="flex justify-between items-center text-xs text-gray-400">
+                            <span>
+                                <i class="pi pi-eye mr-1"></i>
+                                {{ formatViewCount(video.viewCount) }}
+                            </span>
+                            <span>{{ formatDate(video.publishedAt) }}</span>
+                        </div>
+
+                        <!-- 下載按鈕 -->
+                        <div class="mt-3">
+                            <p-button icon="pi pi-download" label="下載" severity="success" [outlined]="true" class="w-full" styleClass="w-full" (onClick)="openDownloadDialog(video)"></p-button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <!-- 空狀態 -->
+    @if (!loading() && videos().length === 0 && searchQuery) {
+        <div class="flex flex-col items-center gap-2 p-8 text-gray-400">
+            <i class="pi pi-search" style="font-size: 3rem"></i>
+            <p>找不到相關影片，請嘗試其他關鍵字</p>
+        </div>
+    }
+</div>
+
+<!-- 下載格式選擇 Dialog -->
+<p-dialog header="選擇下載格式" [(visible)]="showDownloadDialog" [modal]="true" [style]="{ width: '450px' }">
+    @if (selectedVideo) {
+        <div class="flex flex-col gap-4">
+            <!-- 影片預覽 -->
+            <div class="flex gap-3 items-start">
+                <img [src]="selectedVideo.thumbnail" [alt]="selectedVideo.title" class="rounded" style="width: 120px" />
+                <div>
+                    <h5 class="m-0 mb-1 text-sm font-semibold">{{ selectedVideo.title }}</h5>
+                    <p class="m-0 text-xs text-gray-500">{{ selectedVideo.channel }}</p>
+                    <p class="m-0 text-xs text-gray-400">{{ selectedVideo.duration }}</p>
+                </div>
+            </div>
+
+            <!-- 格式選擇 -->
+            <div class="flex flex-col gap-3">
+                <label class="font-semibold">下載類型</label>
+                <div class="flex gap-4">
+                    <p-radioButton name="downloadType" value="audio" [(ngModel)]="downloadType" label="🎵 純音樂 (MP3)" inputId="typeAudio"></p-radioButton>
+                    <p-radioButton name="downloadType" value="video" [(ngModel)]="downloadType" label="🎬 影片 (MP4)" inputId="typeVideo"></p-radioButton>
+                </div>
+            </div>
+
+            <!-- 下載按鈕 -->
+            <div class="flex justify-end gap-2 mt-2">
+                <p-button label="取消" severity="secondary" [outlined]="true" (onClick)="showDownloadDialog = false"></p-button>
+                <p-button label="加入下載排程" icon="pi pi-download" severity="success" (onClick)="onDownload()"></p-button>
+            </div>
+        </div>
+    }
+</p-dialog>

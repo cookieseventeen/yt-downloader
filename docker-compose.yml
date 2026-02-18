@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./frontend/src:/app/src
+      - /app/node_modules
+    depends_on:
+      - backend
+    environment:
+      - NODE_ENV=development
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    volumes:
+      - ./backend/src:/app/src
+      - /app/node_modules
+      - ./downloads:/app/downloads
+    environment:
+      - NODE_ENV=development
+      - DOWNLOAD_DIR=/app/downloads
