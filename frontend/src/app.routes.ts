@@ -10,10 +10,11 @@ export const appRoutes: Routes = [
         path: '',
         component: AppLayout,
         children: [
-            { path: '', component: Dashboard },
-            { path: 'uikit', loadChildren: () => import('./app/pages/uikit/uikit.routes') },
-            { path: 'documentation', component: Documentation },
-            { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') },
+            { path: '', redirectTo: 'youtube/search', pathMatch: 'full' },
+            // { path: '', component: Dashboard },
+            // { path: 'uikit', loadChildren: () => import('./app/pages/uikit/uikit.routes') },
+            // { path: 'documentation', component: Documentation },
+            // { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') },
             { path: 'youtube', loadChildren: () => import('./app/pages/youtube/youtube.routes') }
         ]
     },
