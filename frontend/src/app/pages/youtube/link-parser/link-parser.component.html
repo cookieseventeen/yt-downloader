@@ -55,9 +55,32 @@
                             <span>{{ video.publishedAt }}</span>
                         </div>
 
-                        <!-- 下載按鈕 -->
+                        <!-- 下載按鈕或進度條 -->
                         <div class="mt-3">
-                            <p-button icon="pi pi-download" label="下載" severity="success" [outlined]="true" class="w-full" styleClass="w-full" (onClick)="openDownloadDialog(video)"></p-button>
+                            @if (taskMap().get(video.videoId); as task) {
+                                <div class="flex flex-col gap-1">
+                                    <div class="flex justify-between text-xs text-gray-600 mb-1">
+                                        <span>
+                                            @if (task.status === 'completed') { <i class="pi pi-check-circle text-green-500 mr-1"></i>完成 }
+                                            @else if (task.status === 'failed') { <i class="pi pi-times-circle text-red-500 mr-1"></i>失敗 }
+                                            @else { <i class="pi pi-spin pi-spinner text-blue-500 mr-1"></i>下載中... }
+                                        </span>
+                                        <span>{{ task.progress }}%</span>
+                                    </div>
+                                    <p-progressBar 
+                                        [value]="task.progress" 
+                                        [showValue]="false" 
+                                        [style]="{ height: '6px' }" 
+                                        [color]="task.status === 'failed' ? 'var(--red-500)' : (task.status === 'completed' ? 'var(--green-500)' : 'var(--primary-color)')">
+                                    </p-progressBar>
+                                    
+                                    @if (task.status === 'failed') {
+                                        <p-button label="重試" icon="pi pi-refresh" severity="danger" [outlined]="true" size="small" class="w-full mt-2" styleClass="w-full py-1" (onClick)="openDownloadDialog(video)"></p-button>
+                                    }
+                                </div>
+                            } @else {
+                                <p-button icon="pi pi-download" label="下載" severity="success" [outlined]="true" class="w-full" styleClass="w-full" (onClick)="openDownloadDialog(video)"></p-button>
+                            }
                         </div>
                     </div>
                 </div>

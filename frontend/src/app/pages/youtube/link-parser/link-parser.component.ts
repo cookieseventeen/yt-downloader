@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
@@ -8,6 +8,7 @@ import { TagModule } from 'primeng/tag';
 import { DialogModule } from 'primeng/dialog';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { ToastModule } from 'primeng/toast';
+import { ProgressBarModule } from 'primeng/progressbar';
 import { MessageService } from 'primeng/api';
 import { DownloadService } from '../../core/services/download.service';
 import { DownloadQueueService } from '../../core/services/download-queue.service';
@@ -26,6 +27,7 @@ import { VideoResult } from '../../core/models/video.model';
     DialogModule,
     RadioButtonModule,
     ToastModule,
+    ProgressBarModule
   ],
   providers: [MessageService],
   templateUrl: './link-parser.component.html',
@@ -35,6 +37,15 @@ export class LinkParserComponent {
   videos = signal<VideoResult[]>([]);
   loading = signal(false);
 
+  // Map videoId to DownloadTask for UI status updates
+  taskMap = computed(() => {
+    const map = new Map();
+    this.downloadQueueService.tasks().forEach(task => {
+        map.set(task.videoId, task);
+    });
+    return map;
+  });
+
   // Download Dialog
   showDownloadDialog = false;
   selectedVideo: VideoResult | null = null;
@@ -43,7 +54,7 @@ export class LinkParserComponent {
   constructor(
     private downloadService: DownloadService,
     private messageService: MessageService,
-    private downloadQueueService: DownloadQueueService
+    public downloadQueueService: DownloadQueueService
   ) {}
 
   onParse(): void {
