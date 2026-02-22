@@ -7,7 +7,7 @@ import { SearchResponse } from '../models/video.model';
   providedIn: 'root',
 })
 export class YoutubeService {
-  private readonly apiUrl = 'http://localhost:3000/api/youtube';
+  private readonly apiUrl = '/api/youtube';
 
   constructor(private http: HttpClient) {}
 

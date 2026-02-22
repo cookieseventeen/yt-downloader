@@ -8,7 +8,7 @@ import { VideoResult } from '../models/video.model';
   providedIn: 'root',
 })
 export class DownloadService {
-  private readonly apiUrl = 'http://localhost:3000/api/download';
+  private readonly apiUrl = '/api/download';
   private readonly HISTORY_KEY = 'yt-download-history';
 
   constructor(private http: HttpClient) {}
