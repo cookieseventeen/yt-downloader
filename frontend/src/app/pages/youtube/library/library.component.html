@@ -27,6 +27,7 @@
                 <td>{{ formatDate(file.updatedAt) }}</td>
                 <td>
                     <div class="flex gap-2">
+                        <p-button icon="pi pi-download" severity="info" [rounded]="true" [text]="true" pTooltip="下載" (onClick)="downloadFileAction(file)"></p-button>
                         <p-button icon="pi pi-play" severity="success" [rounded]="true" [text]="true" pTooltip="播放" (onClick)="playFile(file)"></p-button>
                         <p-button icon="pi pi-trash" severity="danger" [rounded]="true" [text]="true" pTooltip="刪除" (onClick)="confirmDelete(file)"></p-button>
                     </div>

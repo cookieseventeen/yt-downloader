@@ -114,8 +114,18 @@ export class DownloadService {
   /**
    * 刪除檔案
    */
-  deleteFile(filename: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/files/${filename}`);
+  deleteFile(filename: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/files/${encodeURIComponent(filename)}`);
+  }
+
+  downloadFileDirectly(filename: string): void {
+    const url = this.getStreamUrl(filename);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename; // This attribute tells the browser to download rather than navigate
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
   /**
    * 非同步下載（回傳 Task ID）

@@ -65,6 +65,10 @@ export class LibraryComponent implements OnInit {
     this.displayPlayer = true;
   }
 
+  downloadFileAction(file: FileInfo): void {
+    this.downloadService.downloadFileDirectly(file.filename);
+  }
+
   confirmDelete(file: FileInfo): void {
     this.confirmationService.confirm({
       message: `確定要刪除「${file.filename}」嗎？`,
