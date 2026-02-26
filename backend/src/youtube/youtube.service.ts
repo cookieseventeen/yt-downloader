@@ -1,17 +1,20 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { VideoResultDto } from './dto/video-result.dto';
 
 @Injectable()
 export class YoutubeService {
+  private readonly logger = new Logger(YoutubeService.name);
   private readonly apiKey: string;
   private readonly baseUrl = 'https://www.googleapis.com/youtube/v3';
 
   constructor(private configService: ConfigService) {
     this.apiKey = this.configService.get<string>('YOUTUBE_API_KEY') || '';
     if (!this.apiKey) {
-      throw new Error('YOUTUBE_API_KEY 環境變數未設定');
+      this.logger.warn(
+        'YOUTUBE_API_KEY 環境變數未設定，YouTube 搜尋功能將無法使用',
+      );
     }
   }
 
@@ -19,6 +22,13 @@ export class YoutubeService {
    * 搜尋 YouTube 影片
    */
   async search(query: string, maxResults: number): Promise<VideoResultDto[]> {
+    if (!this.apiKey) {
+      throw new HttpException(
+        'YouTube API 金鑰尚未綁定，請在環境變數中設定 YOUTUBE_API_KEY',
+        HttpStatus.SERVICE_UNAVAILABLE,
+      );
+    }
+
     try {
       // 步驟1：搜尋影片
       const searchResponse = await axios.get(`${this.baseUrl}/search`, {
