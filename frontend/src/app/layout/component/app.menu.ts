@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { AppMenuitem } from './app.menuitem';
+import { AuthService } from '@/app/pages/core/services/auth.service';
 
 @Component({
     selector: 'app-menu',
@@ -20,6 +21,7 @@ import { AppMenuitem } from './app.menuitem';
 })
 export class AppMenu {
     model: MenuItem[] = [];
+    authService = inject(AuthService);
 
     ngOnInit() {
         this.model = [
@@ -29,7 +31,8 @@ export class AppMenu {
                     { label: '搜尋影片', icon: 'pi pi-fw pi-search', routerLink: ['/youtube/search'] },
                     { label: '連結解析', icon: 'pi pi-fw pi-link', routerLink: ['/youtube/parser'] },
                     { label: '下載歷史', icon: 'pi pi-fw pi-history', routerLink: ['/youtube/history'] },
-                    { label: '媒體庫', icon: 'pi pi-fw pi-folder-open', routerLink: ['/youtube/library'] }
+                    { label: '媒體庫', icon: 'pi pi-fw pi-folder-open', routerLink: ['/youtube/library'] },
+                    { label: '操作紀錄', icon: 'pi pi-fw pi-list', routerLink: ['/youtube/operations'] }
                 ]
             },
             // {

@@ -4,10 +4,12 @@ import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { StyleClassModule } from 'primeng/styleclass';
 import { BadgeModule } from 'primeng/badge';
+import { ButtonModule } from 'primeng/button';
 import { AppConfigurator } from './app.configurator';
 import { LayoutService } from '@/app/layout/service/layout.service';
 import { DownloadsOverlayComponent } from './downloads-overlay.component';
 import { DownloadQueueService } from '@/app/pages/core/services/download-queue.service';
+import { AuthService } from '@/app/pages/core/services/auth.service';
 import { PopoverModule } from 'primeng/popover';
 
 @Component({
@@ -19,6 +21,7 @@ import { PopoverModule } from 'primeng/popover';
         StyleClassModule, 
         AppConfigurator, 
         BadgeModule,
+        ButtonModule,
         DownloadsOverlayComponent,
         PopoverModule
     ],
@@ -76,18 +79,29 @@ import { PopoverModule } from 'primeng/popover';
 
             <div class="layout-topbar-menu hidden lg:block">
                 <div class="layout-topbar-menu-content">
-                    <button type="button" class="layout-topbar-action">
-                        <i class="pi pi-calendar"></i>
-                        <span>Calendar</span>
-                    </button>
-                    <button type="button" class="layout-topbar-action">
-                        <i class="pi pi-inbox"></i>
-                        <span>Messages</span>
-                    </button>
-                    <button type="button" class="layout-topbar-action">
-                        <i class="pi pi-user"></i>
-                        <span>Profile</span>
-                    </button>
+                    @if (authService.isLoggedIn()) {
+                        <span class="flex items-center gap-2 px-3 text-sm text-muted-color">
+                            <i class="pi pi-user"></i>
+                            {{ authService.currentUser()?.displayName }}
+                        </span>
+                        <button type="button" class="layout-topbar-action" routerLink="/youtube/operations">
+                            <i class="pi pi-list"></i>
+                            <span>操作紀錄</span>
+                        </button>
+                        <button type="button" class="layout-topbar-action" (click)="authService.logout()">
+                            <i class="pi pi-sign-out"></i>
+                            <span>登出</span>
+                        </button>
+                    } @else {
+                        <a routerLink="/auth/login" class="layout-topbar-action">
+                            <i class="pi pi-sign-in"></i>
+                            <span>登入</span>
+                        </a>
+                        <a routerLink="/auth/register" class="layout-topbar-action">
+                            <i class="pi pi-user-plus"></i>
+                            <span>註冊</span>
+                        </a>
+                    }
                 </div>
             </div>
         </div>
@@ -98,6 +112,7 @@ export class AppTopbar {
 
     layoutService = inject(LayoutService);
     queueService = inject(DownloadQueueService);
+    authService = inject(AuthService);
 
     toggleDarkMode() {
         this.layoutService.layoutConfig.update((state) => ({
