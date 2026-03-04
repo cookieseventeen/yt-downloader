@@ -8,6 +8,9 @@ dist/
 # Downloads
 backend/downloads/
 
+# Database
+backend/data/
+
 # IDE
 .idea/
 .vscode/
