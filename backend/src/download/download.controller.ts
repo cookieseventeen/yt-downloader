@@ -13,6 +13,7 @@ import {
   StreamableFile,
   Delete,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags, ApiQuery } from '@nestjs/swagger';
 
@@ -21,6 +22,8 @@ import { Observable, Subject } from 'rxjs';
 import { DownloadService, DownloadProgress } from './download.service';
 import { DownloadRequestDto } from './dto/download-request.dto';
 import { VideoResultDto } from '../youtube/dto/video-result.dto';
+import { OperationLogInterceptor, OperationLog } from '../operation-record/operation-log.interceptor';
+import { OperationType } from '../operation-record/entities/operation-record.entity';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -30,6 +33,7 @@ interface TaskInfo {
 }
 
 @ApiTags('下載')
+@UseInterceptors(OperationLogInterceptor)
 @Controller('download')
 export class DownloadController {
   private readonly logger = new Logger(DownloadController.name);
@@ -39,12 +43,14 @@ export class DownloadController {
 
   @Get('formats/:videoId')
   @ApiOperation({ summary: '取得影片可用格式' })
+  @OperationLog(OperationType.VIEW_FORMATS)
   async getFormats(@Param('videoId') videoId: string) {
     return this.downloadService.getFormats(videoId);
   }
 
   @Post('parse')
   @ApiOperation({ summary: '解析 YouTube 網址 (影片/清單)' })
+  @OperationLog(OperationType.PARSE_URL)
   async parseUrl(@Body('url') url: string): Promise<VideoResultDto[]> {
     if (!url) {
       throw new HttpException('網址不能為空', HttpStatus.BAD_REQUEST);
@@ -54,6 +60,7 @@ export class DownloadController {
 
   @Post()
   @ApiOperation({ summary: '下載影片或音樂' })
+  @OperationLog(OperationType.DOWNLOAD)
   async download(@Body() dto: DownloadRequestDto, @Res() res: Response) {
     try {
       const filePath = await this.downloadService.download(
@@ -135,6 +142,7 @@ export class DownloadController {
   }
   @Get('files')
   @ApiOperation({ summary: '取得已下載檔案列表' })
+  @OperationLog(OperationType.VIEW_LIBRARY)
   async getFiles() {
     return this.downloadService.listFiles();
   }
@@ -180,6 +188,7 @@ export class DownloadController {
 
   @Delete('files/:filename')
   @ApiOperation({ summary: '刪除檔案' })
+  @OperationLog(OperationType.DELETE_FILE)
   async deleteFile(@Param('filename') filename: string) {
     await this.downloadService.deleteFile(filename);
     return { success: true };
