@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { YoutubeModule } from './youtube/youtube.module';
 import { DownloadModule } from './download/download.module';
 import { AuthModule } from './auth/auth.module';
 import { OperationRecordModule } from './operation-record/operation-record.module';
+import { OperationLogInterceptor } from './operation-record/operation-log.interceptor';
 import { User } from './auth/entities/user.entity';
 import { OperationRecord } from './operation-record/entities/operation-record.entity';
 
@@ -24,6 +26,12 @@ import { OperationRecord } from './operation-record/entities/operation-record.en
     OperationRecordModule,
     YoutubeModule,
     DownloadModule,
+  ],
+  providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: OperationLogInterceptor,
+    },
   ],
 })
 export class AppModule {}

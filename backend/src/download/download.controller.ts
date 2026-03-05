@@ -13,7 +13,7 @@ import {
   StreamableFile,
   Delete,
   Query,
-  UseInterceptors,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags, ApiQuery } from '@nestjs/swagger';
 
@@ -22,8 +22,9 @@ import { Observable, Subject } from 'rxjs';
 import { DownloadService, DownloadProgress } from './download.service';
 import { DownloadRequestDto } from './dto/download-request.dto';
 import { VideoResultDto } from '../youtube/dto/video-result.dto';
-import { OperationLogInterceptor, OperationLog } from '../operation-record/operation-log.interceptor';
+import { OperationLog } from '../operation-record/operation-log.interceptor';
 import { OperationType } from '../operation-record/entities/operation-record.entity';
+import { OptionalJwtAuthGuard } from '../auth/optional-jwt-auth.guard';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -33,7 +34,7 @@ interface TaskInfo {
 }
 
 @ApiTags('下載')
-@UseInterceptors(OperationLogInterceptor)
+@UseGuards(OptionalJwtAuthGuard)
 @Controller('download')
 export class DownloadController {
   private readonly logger = new Logger(DownloadController.name);

@@ -3,6 +3,7 @@ import {
   NestInterceptor,
   ExecutionContext,
   CallHandler,
+  SetMetadata,
 } from '@nestjs/common';
 import { Observable, tap } from 'rxjs';
 import { Reflector } from '@nestjs/core';
@@ -11,7 +12,7 @@ import { OperationType } from './entities/operation-record.entity';
 
 export const OPERATION_TYPE_KEY = 'operationType';
 export const OperationLog = (type: OperationType) =>
-  Reflect.metadata(OPERATION_TYPE_KEY, type);
+  SetMetadata(OPERATION_TYPE_KEY, type);
 
 @Injectable()
 export class OperationLogInterceptor implements NestInterceptor {

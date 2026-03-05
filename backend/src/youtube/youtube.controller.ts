@@ -1,12 +1,13 @@
-import { Controller, Get, Query, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { YoutubeService } from './youtube.service';
 import { SearchQueryDto } from './dto/search-query.dto';
-import { OperationLogInterceptor, OperationLog } from '../operation-record/operation-log.interceptor';
+import { OperationLog } from '../operation-record/operation-log.interceptor';
 import { OperationType } from '../operation-record/entities/operation-record.entity';
+import { OptionalJwtAuthGuard } from '../auth/optional-jwt-auth.guard';
 
 @ApiTags('YouTube')
-@UseInterceptors(OperationLogInterceptor)
+@UseGuards(OptionalJwtAuthGuard)
 @Controller('youtube')
 export class YoutubeController {
   constructor(private readonly youtubeService: YoutubeService) {}
