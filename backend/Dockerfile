@@ -1,8 +1,8 @@
 FROM node:20-slim
 
-# 安裝 yt-dlp 與 ffmpeg
+# 安裝 yt-dlp、ffmpeg、以及 better-sqlite3 所需的編譯工具
 RUN apt-get update && \
-    apt-get install -y python3 python3-pip ffmpeg curl nodejs && \
+    apt-get install -y python3 python3-pip ffmpeg curl make g++ && \
     curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp && \
     chmod a+rx /usr/local/bin/yt-dlp && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -14,7 +14,7 @@ RUN npm install
 
 COPY . .
 
-RUN mkdir -p downloads
+RUN mkdir -p downloads data
 
 EXPOSE 3000
 
