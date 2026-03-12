@@ -18,4 +18,4 @@ RUN mkdir -p downloads data
 
 EXPOSE 3000
 
-CMD ["npm", "run", "start:dev"]
+CMD ["sh", "-c", "npm rebuild better-sqlite3 && npm run start:dev"]
